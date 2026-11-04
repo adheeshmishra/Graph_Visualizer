@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #070a12;
+  color: #f1f5f9;
+}
+
+.tnum { font-variant-numeric: tabular-nums; }
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(255,255,255,.9); }
+  100% { box-shadow: 0 0 0 6px rgba(255,255,255,0); }
+}
+.cell-current { animation: pulse-ring .6s ease-out infinite; z-index: 2; }
+
+@keyframes chip-in {
+  0% { transform: scale(.4); opacity: 0; }
+  60% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); }
+}
+.chip-new { animation: chip-in .45s ease-out; }
+
+@keyframes flash {
+  0% { background: #fde047; color: #000; }
+  100% { background: transparent; }
+}
+.flash { animation: flash .8s ease-out; }
+
+input[type=range] { accent-color: #facc15; }
