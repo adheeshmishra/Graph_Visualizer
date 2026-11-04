@@ -2,10 +2,10 @@
 
 A visualizer for how pathfinding algorithms search a space, built for teaching content and screen recording.
 
-- **Room tab:** Dijkstra and A* run on the same room, one above the other. Dijkstra floods outward; A* reaches for the key. The large counters show how many cells each one explored.
+- **Room tab:** Dijkstra and A* run on the same room. Dijkstra floods outward; A* reaches for the key. The large counters show how many cells each one explored.
 - **Graph tab:** BFS, 0-1 BFS, Bellman-Ford and Floyd-Warshall run on an editable node-and-edge graph. You can see the node being processed, distances updating, the frontier (queue, deque, edge list or k), visited nodes, and the final path.
 
-The layout is a single column, at most 640px wide, so it survives a 9:16 vertical crop.
+On wide screens the two room panels sit side by side, and the graph sits next to its frontier and distances. Below 1024px everything stacks into one column, at most 640px wide. That suits phones, and a browser window narrowed to about 640px gives a recording that survives a 9:16 crop.
 
 ## Run it
 
@@ -36,15 +36,22 @@ Every frame is a precomputed snapshot, so stepping back is exact. The lower slid
 
 `algo` is `bfs`, `zeroOne`, `bellman` or `floyd`. `preset` is `unweighted`, `zeroOne`, `negEdge` or `negCycle`.
 
-**Room editor:** click **Edit room**, then click or drag to add or remove walls. Drag 📱 or 🔑 to move them.
+**Room editor:** click **Edit room**, then pick a tool:
 
-**Graph editor:** click **Edit graph**, then:
+- 🧱 **Walls:** click or drag on the floor to build walls. Click a wall or furniture to remove it.
+- 📱 **Place phone:** click a floor cell to move the start.
+- 🔑 **Place key:** click a floor cell to move the target.
 
-- click empty space to add a node
-- drag from one node to another to add a directed edge
-- drag a node into empty space to move it
-- click an edge to set its weight (negative weights allowed)
-- right-click a node or edge to delete it
+**Reset** undoes your edits, and **Done** leaves edit mode.
+
+**Graph editor:** click **Edit graph**, then pick a tool. A pink bar over the graph always says what to do next.
+
+- ➕ **Add node:** click empty space.
+- ↗ **Connect:** click the node the arrow starts from, then the node it points to. Edges are directed. A weight box opens straight away, and negative weights are allowed.
+- ✋ **Move:** drag nodes around.
+- 🗑 **Delete:** click a node or an edge.
+
+With any tool except Delete, clicking a weight tag edits it. **Clear** starts over with two empty nodes, and choosing an example graph from the dropdown restores it.
 
 ## The algorithms
 

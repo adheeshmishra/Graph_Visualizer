@@ -39,7 +39,7 @@ function build({ cols, rows, items, start, key }) {
 export const ROOMS = {
   big: {
     name: 'Living room',
-    hint: 'Big room: watch the explored-cell counts',
+    hint: 'Watch how many cells each algorithm explores',
     make: () =>
       build({
         cols: 28,
@@ -61,7 +61,7 @@ export const ROOMS = {
   },
   close: {
     name: 'Close-up',
-    hint: 'Close-up: cells big enough to read g, h and f',
+    hint: 'Big cells show g (steps so far), h (guess to key) and f = g + h',
     make: () =>
       build({
         cols: 12,

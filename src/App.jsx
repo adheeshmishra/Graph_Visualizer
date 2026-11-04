@@ -9,9 +9,9 @@ export default function App() {
     ['graph', '🕸 Graph'],
   ]
   return (
-    <div className="mx-auto max-w-[640px] px-4 py-4 flex flex-col gap-3">
+    <div className="mx-auto max-w-[640px] lg:max-w-[1400px] px-4 py-4 flex flex-col gap-3">
       <header className="flex items-center justify-between gap-3">
-        <h1 className="text-3xl font-black tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-black tracking-tight whitespace-nowrap">
           AirTag <span className="text-yellow-300">Brain</span>
         </h1>
         <nav className="flex gap-1 bg-slate-900 rounded-xl p-1">
@@ -19,7 +19,7 @@ export default function App() {
             <button
               key={id}
               onClick={() => setTab(id)}
-              className={`px-4 h-10 rounded-lg text-lg font-bold ${tab === id ? 'bg-yellow-400 text-black' : 'text-slate-300 hover:bg-slate-800'}`}
+              className={`px-3 sm:px-4 h-10 rounded-lg text-base sm:text-lg font-bold whitespace-nowrap ${tab === id ? 'bg-yellow-400 text-black' : 'text-slate-300 hover:bg-slate-800'}`}
             >
               {label}
             </button>

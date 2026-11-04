@@ -3,20 +3,25 @@ import { ROOMS, OPEN, WALL } from './rooms.js'
 import { runGrid } from './gridAlgos.js'
 import RoomPanel from './RoomPanel.jsx'
 import Controls from '../components/Controls.jsx'
+import EditBar from '../components/EditBar.jsx'
 import { useStepper } from '../lib/useStepper.js'
 import { useWidth } from '../lib/useWidth.js'
 
-const Swatch = ({ color, children }) => (
-  <span className="flex items-center gap-1.5">
-    <span className="inline-block w-4 h-4 rounded-sm" style={{ background: color }} />
-    {children}
-  </span>
-)
+const TOOLS = [
+  { id: 'walls', icon: '🧱', label: 'Walls' },
+  { id: 'start', icon: '📱', label: 'Place phone' },
+  { id: 'key', icon: '🔑', label: 'Place key' },
+]
+const HINTS = {
+  walls: 'Click or drag on the floor to build walls. Click a wall or furniture to remove it.',
+  start: 'Click any floor cell to move the phone (where the search starts).',
+  key: 'Click any floor cell to hide the key there.',
+}
 
 export default function RoomTab({ active }) {
   const [roomId, setRoomId] = useState(() => (new URLSearchParams(location.search).get('room') === 'close' ? 'close' : 'big'))
   const [room, setRoom] = useState(() => ROOMS[roomId].make())
-  const [edit, setEdit] = useState(false)
+  const [tool, setTool] = useState(null) // null = not editing
   const [hover, setHover] = useState(-1)
   const [ref, width] = useWidth()
 
@@ -28,8 +33,11 @@ export default function RoomTab({ active }) {
   const fa = ast[Math.min(s.index, ast.length - 1)]
   const dDone = s.index >= dij.length - 1
   const aDone = s.index >= ast.length - 1
+  // Side by side once the container is wider than the phone layout.
+  const wide = width > 700
+  const panelWidth = wide ? (width - 12) / 2 : width
   // Panel padding (2 × 12px) plus border.
-  const cell = Math.max(8, Math.floor((width - 28) / room.cols))
+  const cell = Math.max(8, Math.floor((panelWidth - 28) / room.cols))
 
   const loadRoom = id => {
     setRoomId(id)
@@ -61,10 +69,13 @@ export default function RoomTab({ active }) {
       return { ...r, kind }
     })
   }
-  const pointer = edit ? {
+  const pointer = tool ? {
     down(i) {
-      if (i < 0) return
-      if (i === room.start) drag.current = 'start'
+      if (i < 0 || !interior(i)) return
+      if (tool === 'start' || tool === 'key') {
+        drag.current = tool
+        apply(i)
+      } else if (i === room.start) drag.current = 'start'
       else if (i === room.key) drag.current = 'key'
       else if (interior(i)) {
         drag.current = { paint: room.kind[i] === OPEN ? WALL : OPEN }
@@ -79,44 +90,58 @@ export default function RoomTab({ active }) {
 
   return (
     <div ref={ref} className="flex flex-col gap-3">
-      <div className="flex flex-wrap items-center gap-2">
-        {Object.entries(ROOMS).map(([id, r]) => (
-          <button
-            key={id}
-            onClick={() => loadRoom(id)}
-            className={`px-4 h-11 rounded-xl text-lg font-semibold ${roomId === id ? 'bg-white text-black' : 'bg-slate-800 text-slate-200 hover:bg-slate-700'}`}
-          >
-            {r.name}
-          </button>
-        ))}
-        <button
-          onClick={() => setEdit(e => !e)}
-          className={`ml-auto px-4 h-11 rounded-xl text-lg font-semibold ${edit ? 'bg-pink-500 text-black' : 'bg-slate-800 text-slate-200 hover:bg-slate-700'}`}
-        >
-          {edit ? '✎ Editing' : '✎ Edit room'}
-        </button>
+      <div className="grid gap-3 lg:grid-cols-2 lg:items-start">
+        <div className="flex flex-wrap items-center gap-2">
+          {Object.entries(ROOMS).map(([id, r]) => (
+            <button
+              key={id}
+              onClick={() => loadRoom(id)}
+              title={r.hint}
+              className={`px-4 h-11 rounded-xl text-lg font-semibold ${roomId === id ? 'bg-white text-black' : 'bg-slate-800 text-slate-200 hover:bg-slate-700'}`}
+            >
+              {r.name}
+            </button>
+          ))}
+          {!tool && (
+            <button onClick={() => setTool('walls')} className="ml-auto px-4 h-11 rounded-xl text-lg font-semibold bg-slate-800 text-slate-200 hover:bg-slate-700">
+              ✎ Edit room
+            </button>
+          )}
+          <p className="w-full text-base text-slate-400">{ROOMS[roomId].hint}. Hover any cell to see its values.</p>
+        </div>
+        <Controls s={s} />
       </div>
-      {edit && (
-        <p className="text-base text-pink-300 -mt-2">
-          Click or drag to add or remove walls. Drag 📱 or 🔑 to move them.
-        </p>
+
+      {tool && (
+        <EditBar
+          title="EDIT ROOM · pick a tool"
+          tools={TOOLS}
+          tool={tool}
+          setTool={setTool}
+          onDone={() => setTool(null)}
+          hint={HINTS[tool]}
+          extra={
+            <button onClick={() => loadRoom(roomId)} className="h-9 px-3 rounded-lg bg-slate-800 font-bold text-slate-200" title="Undo all edits">
+              Reset
+            </button>
+          }
+        />
       )}
 
-      <Controls s={s} />
-
-      <RoomPanel room={room} frame={fd} algo="dijkstra" cell={cell} done={dDone} hover={hover} setHover={setHover} pointer={pointer} />
-      <RoomPanel
-        room={room}
-        frame={fa}
-        algo="astar"
-        cell={cell}
-        done={aDone}
-        hover={hover}
-        setHover={setHover}
-        pointer={pointer}
-        badge={dDone && aDone && fa.path ? `${ratio.toFixed(1)}× fewer cells than Dijkstra` : null}
-      />
-
+      <div className="grid gap-3 lg:grid-cols-2">
+        <RoomPanel room={room} frame={fd} algo="dijkstra" cell={cell} done={dDone} hover={hover} setHover={setHover} pointer={pointer} />
+        <RoomPanel
+          room={room}
+          frame={fa}
+          algo="astar"
+          cell={cell}
+          done={aDone}
+          hover={hover}
+          setHover={setHover}
+          pointer={pointer}
+          badge={dDone && aDone && fa.path ? `${ratio.toFixed(1)}× fewer cells than Dijkstra` : null}
+        />
+      </div>
     </div>
   )
 }

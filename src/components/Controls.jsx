@@ -14,7 +14,7 @@ const Btn = ({ onClick, title, children, primary, disabled }) => (
 export default function Controls({ s }) {
   return (
     <div className="rounded-2xl bg-slate-900/80 border border-slate-800 p-2.5 flex flex-col gap-2">
-      <div className="flex items-center gap-1.5">
+      <div className="flex flex-wrap items-center gap-1.5">
         <Btn onClick={s.toStart} title="Start (Home)" disabled={s.index === 0}>⏮</Btn>
         <Btn onClick={s.stepBack} title="Step back (←)" disabled={s.index === 0}>◀</Btn>
         <Btn onClick={s.toggle} title="Play / pause (Space)" primary>
@@ -22,7 +22,7 @@ export default function Controls({ s }) {
         </Btn>
         <Btn onClick={s.stepForward} title="Step forward (→)" disabled={s.index >= s.total - 1}>▶</Btn>
         <Btn onClick={s.toEnd} title="End (End)" disabled={s.index >= s.total - 1}>⏭</Btn>
-        <label className="flex-1 min-w-0 flex items-center gap-2 ml-2" title="Speed">
+        <label className="basis-full sm:basis-0 sm:flex-1 min-w-0 flex items-center gap-2 sm:ml-2" title="Speed">
           <span className="text-xl">🐢</span>
           <input type="range" min={1} max={60} value={s.speed} onChange={e => s.setSpeed(+e.target.value)} className="flex-1 min-w-0" />
           <span className="tnum text-sm text-slate-300 w-9 text-right">{s.speed}/s</span>
@@ -38,7 +38,10 @@ export default function Controls({ s }) {
           className="flex-1"
           title="Scrub through frames (Space play, ← → step)"
         />
-        <span className="tnum text-sm text-slate-400 w-16 text-right">{s.index}/{s.total - 1}</span>
+        <span className="tnum text-sm text-slate-400 text-right whitespace-nowrap">
+          <span className="hidden sm:inline text-slate-500">Space ▶ · ← → step · </span>
+          {s.index}/{s.total - 1}
+        </span>
       </div>
     </div>
   )

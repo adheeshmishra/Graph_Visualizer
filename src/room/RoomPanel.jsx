@@ -98,7 +98,7 @@ export default function RoomPanel({ room, frame, algo, cell, done, hover, setHov
           <div className="text-base mt-1">{badge ? <span className="text-yellow-300 font-black text-lg">{badge}</span> : <span className="text-slate-300">{t.tag}</span>}</div>
         </div>
         <div className="flex items-baseline gap-2">
-          <span className="text-6xl font-black tnum leading-none" style={{ color: t.accent }}>{frame.explored}</span>
+          <span className="text-5xl sm:text-6xl font-black tnum leading-none" style={{ color: t.accent }}>{frame.explored}</span>
           <span className="text-lg font-bold text-white leading-tight">cells<br />explored</span>
         </div>
       </header>
